@@ -172,5 +172,5 @@ class LeadBot:
         try:
             worker = next(iter(self.workers.values()))
             await worker.session.send_message(self.log_chat_id, text)
-        except Exception as e:
-            print(f"Ошибка логирования: {str(e)}")
+        except Exception:
+            print(f"Ошибка логирования: {traceback.format_exc()}")
