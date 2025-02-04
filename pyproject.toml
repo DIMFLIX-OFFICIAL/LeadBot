@@ -7,7 +7,6 @@ requires-python = ">=3.11"
 dependencies = [
     "aiosqlite>=0.21.0",
     "alembic>=1.14.1",
-    "easygui>=0.98.3",
     "kurigram>=2.1.37",
     "loguru>=0.7.3",
     "pydantic>=2.10.6",

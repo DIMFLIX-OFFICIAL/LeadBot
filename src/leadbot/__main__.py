@@ -13,9 +13,7 @@ from loguru import logger
 
 
 def add_account() -> None:
-    import easygui
-
-    session_pyro = easygui.fileopenbox(filetypes=["*.session"])
+    session_pyro = input("Введите путь до файла с сессией: ")
 
     if not session_pyro:
         logger.error("Не выбрана сессия Pyrogram. Завершение скрипта...")
