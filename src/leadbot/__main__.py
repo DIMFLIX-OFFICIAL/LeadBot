@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import asyncio
-
 import uvloop
 
 from .core import LeadBot
@@ -55,15 +54,14 @@ def add_account() -> None:
 
 
 async def _main():
-    bot = LeadBot(
+    leadbot = LeadBot(
         managers_chat=cfg.bot.manager_chat_id,
         trigger_words=cfg.bot.trigger_words,
         folder_name=cfg.bot.folder_name,
         blacklist_chats=cfg.bot.blacklist_chats,
         log_chat_id=cfg.bot.log_chat_id,
     )
-    await bot.start()
-
+    await leadbot.start()
 
 def main():
     uvloop.install()

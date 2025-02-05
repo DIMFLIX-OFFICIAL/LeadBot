@@ -1,3 +1,4 @@
+import asyncio
 import re
 import traceback
 from dataclasses import dataclass, field
@@ -11,7 +12,7 @@ from pyrogram.types import Message
 
 from .config import cfg
 from .database.models import Account
-from .loader import db
+from .loader import bot, db
 
 
 @dataclass
@@ -40,10 +41,13 @@ class LeadBot:
     async def start(self):
         await self.init_clients()
         logger.info("Начинаю мониторинг сообщений!")
+        asyncio.create_task(self.while_update_accounts_chats())
         await idle()
 
     async def init_clients(self):
         accounts = await db.accounts.get_accounts()
+        error_accounts = []
+        connected_accounts = 0
 
         for account in accounts:
             try:
@@ -69,15 +73,26 @@ class LeadBot:
                     account=account,
                     session=client,
                 )
-                await self.log(f"✅ Аккаунт {account.id} подключен")
-            except Exception as e:
+                connected_accounts += 1
+            except Exception:
                 logger.error(
                     f"Ошибка при подключении аккаунта: {traceback.format_exc()}"
                 )
-                await self.log_error(
-                    f"Ошибка подключения аккаунта {account.id}: {str(e)}"
+                await db.accounts.set_account_valid(
+                    account_id=accounts.id,
+                    status=False
                 )
+                error_accounts.append(account.id)
 
+            await self.log(f"Подключено аккаунтов: {connected_accounts}/{len(accounts)}")
+            if len(error_accounts) > 0:
+                await self.log_error(f"Возникла ошибка при подключении к аккаунтам: {','.join(error_accounts)}")
+
+            await self.update_accounts_chats()
+
+    async def while_update_accounts_chats(self):
+        while True:
+            await asyncio.sleep(cfg.bot.delay_for_update_accounts_chats)
             await self.update_accounts_chats()
 
     async def update_accounts_chats(self):
@@ -96,9 +111,7 @@ class LeadBot:
                             for chat in f.pinned_chats:
                                 worker.suitable_chats.append(chat.id)
             except AttributeError:
-                logger.error(
-                    f"На аккаунте {worker.account.id} нет папок!"
-                )
+                logger.error(f"На аккаунте {worker.account.id} нет папок!")
                 await self.log_error(
                     f"Ошибка обновлении списка чатов аккаунта {worker.account.id}"
                 )
@@ -127,7 +140,7 @@ class LeadBot:
             if message.chat.id in cfg.bot.blacklist_chats:
                 logger.info("Чат в блэк листе")
                 return
-            
+
             for w in self.workers.values():
                 if client is w.session:
                     if message.chat.id in w.suitable_chats:
@@ -153,7 +166,7 @@ class LeadBot:
                 f"🔗 {message_link}"
             )
 
-            await client.send_message(
+            await bot.send_message(
                 chat_id=self.managers_chat,
                 text=report,
                 parse_mode=ParseMode.MARKDOWN,
@@ -170,7 +183,6 @@ class LeadBot:
 
     async def send_to_log_chat(self, text: str):
         try:
-            worker = next(iter(self.workers.values()))
-            await worker.session.send_message(self.log_chat_id, text)
+            await bot.send_message(self.log_chat_id, text)
         except Exception:
             print(f"Ошибка логирования: {traceback.format_exc()}")

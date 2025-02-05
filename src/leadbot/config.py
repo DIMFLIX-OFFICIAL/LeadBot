@@ -7,11 +7,13 @@ from pydantic_settings import BaseSettings
 
 
 class BotConfig(BaseSettings):
+    token: str
     manager_chat_id: int
     log_chat_id: int
     folder_name: str
     trigger_words: List[str]
     blacklist_chats: List[int]
+    delay_for_update_accounts_chats: int
 
 
 class Database(BaseSettings):

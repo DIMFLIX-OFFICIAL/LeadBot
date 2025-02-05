@@ -1,15 +1,17 @@
 import sys
-from .config import cfg
-from .database.db_manager import DatabaseManager
-from .database.cruds import CommonCRUD
 
+from aiogram import Bot
 from loguru import logger
 
+from .config import cfg
+from .database.cruds import CommonCRUD
+from .database.db_manager import DatabaseManager
 
 ##==> Database
 #################################################
 db_manager = DatabaseManager(cfg.db.url)
 db = CommonCRUD(db_manager)
+bot = Bot(token=cfg.bot.token)
 
 
 ##==> Logging
