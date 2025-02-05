@@ -34,9 +34,14 @@ class LeadBot:
         self.managers_chat: int = managers_chat
         self.blacklist_chats: List[int] = blacklist_chats
         self.folder_name: str = folder_name
-        self.trigger_words: List[str] = trigger_words
         self.log_chat_id = log_chat_id
         self.workers: Dict[int, Worker] = dict()
+
+        self.trigger_words: List[str] = trigger_words
+        self.trigger_pattern = re.compile(
+            r'\b(?>' + '|'.join(map(re.escape, self.trigger_words)) + r')\b',
+            flags=re.IGNORECASE | re.UNICODE
+        )
 
     async def start(self):
         await self.init_clients()
@@ -155,9 +160,7 @@ class LeadBot:
                 return
 
             text_lower = message.text.lower()
-            if not any(
-                re.search(rf"\b{word}\b", text_lower) for word in self.trigger_words
-            ):
+            if not self.trigger_pattern.search(text_lower):
                 logger.info("В сообщении нет триггерных слов")
                 return
 
