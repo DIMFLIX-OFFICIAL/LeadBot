@@ -102,14 +102,19 @@ class LeadBot:
 
             try:
                 folders = await client.get_folders()
+                new_chats = []
+
                 for f in folders:
                     if f.title.text == self.folder_name:
                         if f.included_chats:
                             for chat in f.included_chats:
-                                worker.suitable_chats.append(chat.id)
+                                new_chats.append(chat.id)
                         if f.pinned_chats:
                             for chat in f.pinned_chats:
-                                worker.suitable_chats.append(chat.id)
+                                new_chats.append(chat.id)
+
+                worker.suitable_chats.clear()
+                worker.suitable_chats.extend(new_chats)
             except AttributeError:
                 logger.error(f"На аккаунте {worker.account.id} нет папок!")
                 await self.log_error(
