@@ -95,8 +95,8 @@ class Account(BaseModel):
         return f"[{self.id}] {self.phone_number}"
 
 
-class IgnoreLeads(BaseModel):
-    __tablename__: str = "ignore_lead"
+class IgnoreLead(BaseModel):
+    __tablename__: str = "ignore_leads"
     __tableargs__ = {"comment": "Таблица с игнорируемыми телеграм аккаунтами (лидами)"}
 
     id: Mapped[int] = mapped_column(
@@ -108,7 +108,7 @@ class IgnoreLeads(BaseModel):
     )
 
 
-class IgnoreLeadMessages(BaseModel):
+class IgnoreLeadMessage(BaseModel):
     __tablename__: str = "ignore_lead_messages"
     __tableargs__ = {"comment": "Таблица с игнорируемыми сообщениями в лидах"}
     id: Mapped[int] = mapped_column(
