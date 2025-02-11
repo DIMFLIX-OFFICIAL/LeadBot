@@ -111,16 +111,10 @@ class IgnoreLead(BaseModel):
 class IgnoreLeadMessage(BaseModel):
     __tablename__: str = "ignore_lead_messages"
     __tableargs__ = {"comment": "Таблица с игнорируемыми сообщениями в лидах"}
-    id: Mapped[int] = mapped_column(
-        BIGINT,
-        nullable=False,
-        primary_key=True,
-        autoincrement=True,
-        comment="Идентификатор записи внутри нашей системы",
-    )
     message: Mapped[str] = mapped_column(
         TEXT,
         nullable=False,
         comment="Игнорируемое сообщение",
-        index=True
+        index=True,
+        primary_key=True
     )

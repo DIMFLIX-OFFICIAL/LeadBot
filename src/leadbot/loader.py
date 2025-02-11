@@ -1,6 +1,6 @@
 import sys
 
-from aiogram import Bot
+from aiogram import Bot, Dispatcher
 from loguru import logger
 
 from .config import cfg
@@ -12,7 +12,7 @@ from .database.db_manager import DatabaseManager
 db_manager = DatabaseManager(cfg.db.url)
 db = CommonCRUD(db_manager)
 bot = Bot(token=cfg.bot.token)
-
+dp = Dispatcher()
 
 ##==> Logging
 #################################################

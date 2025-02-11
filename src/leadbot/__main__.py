@@ -4,7 +4,7 @@ import asyncio
 import uvloop
 
 from .core import LeadBot
-from .loader import db
+from .loader import db, dp, bot
 from .config import cfg
 from .utils.json_proxy import JSONProxy
 
@@ -61,7 +61,9 @@ async def _main():
         blacklist_chats=cfg.bot.blacklist_chats,
         log_chat_id=cfg.bot.log_chat_id,
     )
-    await leadbot.start()
+
+    dp.include_router(leadbot.bot_router)
+    await asyncio.gather(*[dp.start_polling(bot), leadbot.start()])
 
 def main():
     uvloop.install()

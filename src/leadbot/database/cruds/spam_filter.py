@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, List
 
+from sqlalchemy import exists
 from sqlalchemy.future import select
 
 from ..db_manager import DatabaseManager
@@ -18,19 +19,27 @@ class SpamFilterCRUD:
 
     async def add_account_to_ignore(self, account_id: int) -> IgnoreLead:
         async with self.db.get_session() as session:
-            new_ignored_lead = IgnoreLead(id=account_id)
-            session.add(new_ignored_lead)
-            await session.commit()
-            await session.refresh(new_ignored_lead)
-            return new_ignored_lead
+            exists_query = await session.execute(
+                select(exists().where(IgnoreLead.id == account_id))
+            )
+            if not exists_query.scalar():
+                new_ignored_lead = IgnoreLead(id=account_id)
+                session.add(new_ignored_lead)
+                await session.commit()
+                await session.refresh(new_ignored_lead)
+                return new_ignored_lead
         
     async def add_message_to_ignore(self, message_text: str) -> IgnoreLeadMessage:
         async with self.db.get_session() as session:
-            new_ignored_lead_message = IgnoreLeadMessage(message=message_text)
-            session.add(new_ignored_lead_message)
-            await session.commit()
-            await session.refresh(new_ignored_lead_message)
-            return new_ignored_lead_message
+            exists_query = await session.execute(
+                select(exists().where(IgnoreLeadMessage.message == message_text))
+            )
+            if not exists_query.scalar():
+                new_ignored_lead_message = IgnoreLeadMessage(message=message_text)
+                session.add(new_ignored_lead_message)
+                await session.commit()
+                await session.refresh(new_ignored_lead_message)
+                return new_ignored_lead_message
         
     async def add_full_ignore(self, account_id: int, message_text: str):
         await self.add_account_to_ignore(account_id)
