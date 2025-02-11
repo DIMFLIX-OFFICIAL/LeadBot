@@ -93,3 +93,34 @@ class Account(BaseModel):
 
     def __str__(self):
         return f"[{self.id}] {self.phone_number}"
+
+
+class IgnoreLeads(BaseModel):
+    __tablename__: str = "ignore_lead"
+    __tableargs__ = {"comment": "Таблица с игнорируемыми телеграм аккаунтами (лидами)"}
+
+    id: Mapped[int] = mapped_column(
+        BIGINT,
+        nullable=False,
+        primary_key=True,
+        index=True,
+        comment="Айди аккаунта Teleagram",
+    )
+
+
+class IgnoreLeadMessages(BaseModel):
+    __tablename__: str = "ignore_lead_messages"
+    __tableargs__ = {"comment": "Таблица с игнорируемыми сообщениями в лидах"}
+    id: Mapped[int] = mapped_column(
+        BIGINT,
+        nullable=False,
+        primary_key=True,
+        autoincrement=True,
+        comment="Идентификатор записи внутри нашей системы",
+    )
+    message: Mapped[str] = mapped_column(
+        TEXT,
+        nullable=False,
+        comment="Игнорируемое сообщение",
+        index=True
+    )
