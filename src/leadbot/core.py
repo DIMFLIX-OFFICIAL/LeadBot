@@ -107,7 +107,7 @@ class LeadBot:
             )
             if len(error_accounts) > 0:
                 await self.log_error(
-                    f"Возникла ошибка при подключении к аккаунтам: {','.join(error_accounts)}"
+                    f"Возникла ошибка при подключении к аккаунтам: {','.join(map(str, error_accounts))}"
                 )
 
             await self.update_accounts_chats()
