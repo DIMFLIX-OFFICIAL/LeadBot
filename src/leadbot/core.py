@@ -98,7 +98,7 @@ class LeadBot:
                     f"Ошибка при подключении аккаунта: {traceback.format_exc()}"
                 )
                 await db.accounts.set_account_valid(
-                    account_id=accounts.id, status=False
+                    account_id=account.id, status=False
                 )
                 error_accounts.append(account.id)
 
